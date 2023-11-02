@@ -1,0 +1,5 @@
+.env
+env/
+migrations/
+**/test**
+/django-version/db.sqlite3

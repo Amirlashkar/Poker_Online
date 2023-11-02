@@ -1,0 +1,7 @@
+{
+    "1": "username already exists",
+    "2": "password already taken",
+    "3": "username should have 8 or more characters",
+    "4": "password should have 8 or more characters",
+    "5": "choose better password with numbers, Uppercase, Lowercase and symbols character"
+}
