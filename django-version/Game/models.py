@@ -2,11 +2,6 @@ from django.db import models
 from Login.models import User    
 
 
-class Game(models.Model):
-    stage = models.IntegerField(max_length=50, default=1)
-    board_cards = models.CharField(max_length=50, default=None)
-
-
 class GameUserState(models.IntegerChoices):
     satout = 0, "satout"
     action_needed = 1, "action_needed"
@@ -26,6 +21,11 @@ class Wins(models.IntegerChoices):
     fullhouse = 6, "fullhouse"
     fourkind = 7, "fourkind"
     straightflush = 8, "straightflush"
+
+
+class Game(models.Model):
+    stage = models.IntegerField(max_length=50, default=1)
+    board_cards = models.CharField(max_length=50, default=None)
 
 
 class GameUser(models.Model):
