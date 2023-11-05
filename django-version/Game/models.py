@@ -9,6 +9,7 @@ class GameUserState(models.IntegerChoices):
     check = 3, "check"
     called = 4, "called"
     raised = 5, "raised"
+    allin = 6, "allin"
 
 
 class Wins(models.IntegerChoices):
@@ -24,17 +25,27 @@ class Wins(models.IntegerChoices):
 
 
 class Game(models.Model):
-    stage = models.IntegerField(max_length=50, default=1)
-    board_cards = models.CharField(max_length=50, default=None)
+    stage = models.IntegerField(max_length=50, default=1, null=True)
+    board_cards = models.CharField(max_length=50, default=None, null=True)
+    lowest_stage_money = models.IntegerField(max_length=50)
+    agregated_money = models.IntegerField(max_length=50, default=None, null=True)
 
 
 class GameUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    state = models.PositiveSmallIntegerField(choices=GameUserState.choices, default=GameUserState.satout,
-                                             null=True, blank=True, primary_key=False, editable=True)
-    card1 = models.CharField(max_length=10)
-    card2 = models.CharField(max_length=10)
-    ingame_money = models.IntegerField(max_length=50)
-    current_win = models.PositiveSmallIntegerField(choices=Wins.choices ,default=Wins.highcard, 
-                                                   null=True, blank=True, primary_key=False, editable=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, 
+                             null=True, 
+                             related_name='users')
+    
+    is_turn = models.BooleanField(default=False)
+    onboard_money = models.IntegerField(max_length=50)
+    state = models.PositiveSmallIntegerField(choices=GameUserState.choices, 
+                                            default=GameUserState.satout,
+                                            null=True, blank=True, primary_key=False, 
+                                            editable=True)
+
+    card1 = models.CharField(max_length=10, null=True)
+    card2 = models.CharField(max_length=10, null=True)
+    ingame_money = models.IntegerField(max_length=50, null=True)
+    current_win = models.PositiveSmallIntegerField(choices=Wins.choices ,default=Wins.highcard,
+                                                   null=True, blank=True, primary_key=False, 
+                                                   editable=True)

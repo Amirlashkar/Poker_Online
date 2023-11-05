@@ -35,8 +35,12 @@ class UserManager(models.Manager):
 class User(models.Model):
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30, unique=True)
-    ingame_money = models.IntegerField(max_length=50)
-    game_user = models.ForeignKey(GameUser, on_delete=models.CASCADE, default=None)
+    whole_money = models.IntegerField(max_length=50)
+    game_user = models.ForeignKey(GameUser, 
+                                  on_delete=models.CASCADE, 
+                                  default=None, 
+                                  null=True,
+                                  related_name="main_user")
 
     manager = UserManager()
     manager.is_valid(username.__str__(), password.__str__())
