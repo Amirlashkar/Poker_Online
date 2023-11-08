@@ -1,66 +1,75 @@
 from models import *
 
 
-def next_turn(user:GameUser, game:Game, ids:list):
-    users = game.users.all()
+def start_game(player:Player, game:Game):
+    pass
 
-    if ids.index(user.id) == len(ids) - 1:
-        user.is_turn = False
-        user.save()
+
+def next_turn(player:Player, game:Game):
+
+    users = game.users.all()
+    ids = [u.id for u in users]
+    first_player = [id for id in ids if id == game.first_player_of_turn][0]
+    ids = ids[ids.index(first_player):] + ids[:ids.index(first_player)]
+
+    if ids.index(player.id) == len(ids) - 1:
+        player.is_turn = False
+        player.save()
     else:
-        user.is_turn = False
-        user.save()
+        player.is_turn = False
+        player.save()
         
-        for id in ids[ids.index(user.id) + 1:]:
+        for id in ids[ids.index(player.id) + 1:]:
             u = users.get(id=id)
-            if u.state not in (GameUserState.fold, GameUserState.allin):
+            if u.state not in (PlayerState.fold, PlayerState.allin):
                 break
         
         u.is_turn = True
         u.save()
-            
-
-    ids = ids[1:] + ids[0]
-    return ids
 
 
 # stages have some repeatitive states
-def check(user:GameUser, game:Game, ids:list):
-    if game.lowest_stage_money == user.onboard_money:
-        user.state = GameUserState.check
-        user.save()
+def check(player:Player, game:Game):
+    if game.lowest_stage_money == player.onboard_money:
+        player.state = PlayerState.check
+        player.save()
 
-        next_turn(user, game, ids)
+        next_turn(player, game)
     else:
         return "Call or Fold!"
 
 
-def fold(user:GameUser, game:Game, ids:list):
-    user.state = GameUserState.fold
-    user.save()
+def fold(player:Player, game:Game):
+    player.state = PlayerState.fold
+    player.save()
 
-    next_turn(user, game, ids)
+    next_turn(player, game)
 
 
-def raise_(user:GameUser, game:Game, ids:list, amount:int):
-    if amount == user.ingame_money:
-        user.state = GameUserState.allin
+def raise_(player:Player, game:Game, amount:int):
+    if amount == player.ingame_money:
+        player.state = PlayerState.allin
     else:
-        user.state = GameUserState.raised
+        player.state = PlayerState.raised
 
-    user.onboard_money += amount
-    user.save()
+    player.onboard_money += amount
+    player.save()
 
-    game.lowest_stage_money = user.onboard_money
+    game.lowest_stage_money = player.onboard_money
     game.save()
 
-    next_turn(user, game, ids)
+    next_turn(player, game)
 
 
-def call(user:GameUser, game:Game, ids:list):
-    diff = game.lowest_stage_money - user.onboard_money
-    user.onboard_money = game.lowest_stage_money
-    user.ingame_money -= diff
-    user.save()
+def call(player:Player, game:Game):
+    diff = game.lowest_stage_money - player.onboard_money
+    player.onboard_money = game.lowest_stage_money
+    player.ingame_money -= diff
+    player.save()
 
-    next_turn(user, game, ids)
+    next_turn(player, game)
+
+
+# winning strategies
+def player_win(player:Player, game:Game) -> Wins:
+    card1 = player.card1

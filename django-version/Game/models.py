@@ -2,7 +2,7 @@ from django.db import models
 from Login.models import User    
 
 
-class GameUserState(models.IntegerChoices):
+class PlayerState(models.IntegerChoices):
     satout = 0, "satout"
     action_needed = 1, "action_needed"
     fold = 2, "fold"
@@ -29,17 +29,19 @@ class Game(models.Model):
     board_cards = models.CharField(max_length=50, default=None, null=True)
     lowest_stage_money = models.IntegerField(max_length=50)
     agregated_money = models.IntegerField(max_length=50, default=None, null=True)
+    first_player_of_turn = models.IntegerField(max_length=50, default=None, null=True)
+    first_player_of_game = models.IntegerField(max_length=50, default=None, null=True)
 
 
-class GameUser(models.Model):
+class Player(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, 
                              null=True, 
                              related_name='users')
     
     is_turn = models.BooleanField(default=False)
     onboard_money = models.IntegerField(max_length=50)
-    state = models.PositiveSmallIntegerField(choices=GameUserState.choices, 
-                                            default=GameUserState.satout,
+    state = models.PositiveSmallIntegerField(choices=PlayerState.choices, 
+                                            default=PlayerState.satout,
                                             null=True, blank=True, primary_key=False, 
                                             editable=True)
 

@@ -1,4 +1,4 @@
-from Game.models import GameUser
+from Game.models import Player
 from django.db import models
 import json, re, os
 
@@ -36,10 +36,7 @@ class User(models.Model):
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30, unique=True)
     whole_money = models.IntegerField(max_length=50)
-    game_user = models.ForeignKey(GameUser, 
-                                  on_delete=models.CASCADE, 
-                                  default=None, 
-                                  null=True,
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, 
                                   related_name="main_user")
 
     manager = UserManager()
