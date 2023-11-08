@@ -36,7 +36,7 @@ class Game(models.Model):
 class Player(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, 
                              null=True, 
-                             related_name='users')
+                             related_name='players')
     
     is_turn = models.BooleanField(default=False)
     onboard_money = models.IntegerField(max_length=50)

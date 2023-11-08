@@ -1,4 +1,5 @@
 from models import *
+from .components import *
 
 
 def start_game(player:Player, game:Game):
@@ -7,8 +8,8 @@ def start_game(player:Player, game:Game):
 
 def next_turn(player:Player, game:Game):
 
-    users = game.users.all()
-    ids = [u.id for u in users]
+    players = game.players.all()
+    ids = [p.id for p in players]
     first_player = [id for id in ids if id == game.first_player_of_turn][0]
     ids = ids[ids.index(first_player):] + ids[:ids.index(first_player)]
 
@@ -20,12 +21,12 @@ def next_turn(player:Player, game:Game):
         player.save()
         
         for id in ids[ids.index(player.id) + 1:]:
-            u = users.get(id=id)
-            if u.state not in (PlayerState.fold, PlayerState.allin):
+            p = players.get(id=id)
+            if p.state not in (PlayerState.fold, PlayerState.allin):
                 break
         
-        u.is_turn = True
-        u.save()
+        p.is_turn = True
+        p.save()
 
 
 # stages have some repeatitive states
@@ -72,4 +73,10 @@ def call(player:Player, game:Game):
 
 # winning strategies
 def player_win(player:Player, game:Game) -> Wins:
-    card1 = player.card1
+    card1 = Card().expr2feats(player.card1)
+    card2 = Card().expr2feats(player.card2)
+    
+    board_cards = game.board_cards.split("><")
+    board_cards = [Card().expr2feats(card) for card in board_cards]
+    
+    

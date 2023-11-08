@@ -1,6 +1,6 @@
 from typing import Set
 from enum import StrEnum
-import random
+import random, re
 
 
 class Kind(StrEnum):
@@ -28,6 +28,36 @@ class Card:
         else:
             return f"<{num} of {kind}>"
     
+    def expr2feats(self, expression:str):
+        num_pattern = r"(\d+)"
+        num = re.findall(num_pattern, expression)
+        if num:
+            self.num = num
+        else:
+            if "A" in expression:
+                self.num = 1
+            elif "Juvenile" in expression:
+                self.num = 11
+            elif "Queen" in expression:
+                self.num = 12
+            elif "King" in expression:
+                self.num = 13
+        
+        kind_pattern = r"([A-Z])"
+        kind = re.findall(kind_pattern, expression)
+        if "A" in kind:
+            del kind[0]
+
+        kind = kind[0]
+        if "C" in kind:
+            self.kind = Kind.Clubs
+        elif "H" in kind:
+            self.kind = Kind.Hearts
+        elif "D" in kind:
+            self.kind = Kind.Diamonds
+        elif "S" in kind:
+            self.kind = Kind.Spades
+            
     def __str__(self) -> str:
         return self.naming(self.num, self.kind)
     
@@ -37,8 +67,8 @@ class Card:
 
 class Cards:
     def __init__(self):
-        self.unshowns:Set[Card] = set()
-        self.showns:Set[Card] = set()
+        self.unchosen:Set[Card] = set()
+        self.chosen:Set[Card] = set()
 
         self.create_set_of_cards()
     
@@ -57,13 +87,13 @@ class Cards:
         
         cards = list(cards)
         random.shuffle(cards)
-        self.unshowns = set(cards)
+        self.unchosen = set(cards)
 
     def choose_a_card(self):
-        card = random.sample(list(self.unshowns), 1)[0]
+        card = random.sample(list(self.unchosen), 1)[0]
         card.is_shown = True
 
-        self.unshowns.remove(card)
-        self.showns.add(card)
+        self.unchosen.remove(card)
+        self.chosen.add(card)
 
         return card
