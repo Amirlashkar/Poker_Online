@@ -71,12 +71,15 @@ def call(player:Player, game:Game):
     next_turn(player, game)
 
 
+def detect_win(player_cards:list, board_cards:list) -> Wins:
+    # start here
+    pass
+
+
 # winning strategies
 def player_win(player:Player, game:Game) -> Wins:
-    card1 = Card().expr2feats(player.card1)
-    card2 = Card().expr2feats(player.card2)
-    
+    player_cards = [Card().expr2feats(player.card1), Card().expr2feats(player.card2)]
     board_cards = game.board_cards.split("><")
     board_cards = [Card().expr2feats(card) for card in board_cards]
-    
-    
+
+
